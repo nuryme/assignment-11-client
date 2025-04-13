@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "John Terry",
+    "location": "New York City",
+    "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In gravida eu arcu a pharetra.",
+    "photo": "https://i.pinimg.com/736x/d0/c4/1b/d0c41b2734aa37dd363f4cc9ebf8ff90.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Jessica D Miller",
+    "location": "New York City",
+    "text": "Cras varius semper pharetra. Pellentesque sed feugiat nisi.",
+    "photo": "https://i.pinimg.com/736x/56/25/bc/5625bcb68bbe583bb2843a5c712621e0.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Alex Johnson",
+    "location": "Chicago",
+    "text": "Another testimonial text goes here.",
+    "photo": "https://i.pinimg.com/736x/d8/07/67/d8076714a3a37b374d08c498cace7c0b.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Sarah Williams",
+    "location": "Los Angeles",
+    "text": "More sample content for the slider.",
+    "photo": "https://i.pinimg.com/736x/7d/10/22/7d1022e5e211525cc65ad1204b576d4b.jpg"
+  }
+]

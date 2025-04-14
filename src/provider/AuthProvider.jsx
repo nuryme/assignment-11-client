@@ -11,6 +11,7 @@ import { AuthContext } from "../context/AuthContext";
 import auth from "../firebase/firebase.config";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import axios from "axios";
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -39,7 +40,7 @@ const AuthProvider = ({ children }) => {
   //log out
   const handleLogOut = () => {
     setLoading(true);
-    return signOut(auth)
+    return signOut(auth);
   };
 
   //profile update
@@ -54,19 +55,38 @@ const AuthProvider = ({ children }) => {
   //manage user
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
-      // if (currentUser) {
-      //   setUser(currentUser);
-      //   setLoading(false);
-      //   // console.log(currentUser);
-      // }
+      setUser(currentUser);
 
-      setUser(currentUser)
-      setLoading(false)
+      if (currentUser) {
 
-      return () => {
-        return unSubscribe();
-      };
+        const email = {email: currentUser.email}
+
+        axios.post(`${import.meta.env.VITE_URL}/jwt`, email, {
+          withCredentials: true
+        })
+        .then((res) => {
+          console.log(res.data)
+
+          setLoading(false);
+        }
+        )
+
+        // console.log(currentUser);
+      } else {
+        axios.get(`${import.meta.env.VITE_URL}/logout`, {withCredentials: true}).then((res) => {
+          console.log("log out", res.data)
+          setLoading(false);
+        }
+        )
+        
+      }
+
     });
+
+
+    return () => {
+      return unSubscribe();
+    };
   }, []);
 
   const authInfo = {

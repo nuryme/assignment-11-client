@@ -3,12 +3,13 @@ import useAuthHook from "../hooks/useAuthHook";
 import toast from "react-hot-toast";
 import Lottie from "lottie-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 const Login = () => {
   const { handleLogin, setUser, handleGoogleLogin } = useAuthHook();
-  const location = useLocation()
-  const navigate = useNavigate()
-  const from = location?.state?.from?.pathname || '/'
+  const location = useLocation();
+  const navigate = useNavigate();
+  const from = location?.state?.from?.pathname || "/";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,29 +21,30 @@ const Login = () => {
       .then((res) => {
         setUser(res.user);
         toast.success("Login Successful", { icon: "👏" });
-         navigate(from, {replace: true})
+        navigate(from, { replace: true });
       })
       .catch((err) => toast.error(err.message));
   };
 
   const handleGoogle = () => {
     handleGoogleLogin()
-    .then((res) => {
-      setUser(res.user)
-      toast.success("Login Successful", { icon: "👏" });
-      navigate(from, {replace: true})
-    }
-    )
-    .catch((err) => toast.error(err.message));
-}
-  
+      .then((res) => {
+        setUser(res.user);
+        toast.success("Login Successful", { icon: "👏" });
+        navigate(from, { replace: true });
+      })
+      .catch((err) => toast.error(err.message));
+  };
 
   return (
     <div className="p-6">
+      <Helmet>
+        <title>Login | Home</title>
+      </Helmet>
+
       <h1 className=" text-center primaryColor">Please Login</h1>
 
-      <Link onClick={handleGoogle
-      } className="flex justify-center mt-12 mb-4">
+      <Link onClick={handleGoogle} className="flex justify-center mt-12 mb-4">
         <button className="bg-gray-100 border-blue-500 border-2 rounded-3xl text-blue-500 font-medium px-12 py-2 flex gap-2 items-center cursor-pointer">
           Login with
           <img
@@ -108,7 +110,7 @@ const Login = () => {
             <button
               type="submit"
               className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer"
-           >
+            >
               Login
             </button>
           </form>

@@ -10,40 +10,41 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Loading from "./Loading";
+import { Helmet } from "react-helmet";
 
 const AllItems = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState("");
   const all = true;
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedTerm(searchTerm)
+      setDebouncedTerm(searchTerm);
     }, 500);
 
-    return () => clearTimeout(timer)
-  }
-  , [searchTerm])
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const {
     data: items,
     isLoading,
     isError,
     isSuccess,
-
   } = useQuery({
     queryKey: ["search", debouncedTerm],
     queryFn: async () => {
       return await axios
-        .get(`${import.meta.env.VITE_URL}/items?all=${all}&search=${debouncedTerm}`)
+        .get(
+          `${import.meta.env.VITE_URL}/items?all=${all}&search=${debouncedTerm}`
+        )
         .then((res) => res.data);
     },
-    keepPreviousData: true
+    keepPreviousData: true,
   });
 
-  if(isSuccess) {
-    queryClient.invalidateQueries({queryKey: ['allItems']})
+  if (isSuccess) {
+    queryClient.invalidateQueries({ queryKey: ["allItems"] });
   }
 
   if (isLoading) {
@@ -60,6 +61,10 @@ const AllItems = () => {
 
   return (
     <div className="max_width mt-6">
+      <Helmet>
+        <title>All Item | Home</title>
+      </Helmet>
+
       <h1 className="mb-12 text-center">Lost/Found Items</h1>
 
       <div className="relative mb-8 max-w-md mx-auto">
@@ -71,11 +76,14 @@ const AllItems = () => {
           className="w-full pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <FaSearch className="absolute left-3 top-3 text-gray-400" />
-        {
-          searchTerm && <button onClick={searchClear} className="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
-          <FaTimes />
-        </button>
-        }
+        {searchTerm && (
+          <button
+            onClick={searchClear}
+            className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+          >
+            <FaTimes />
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -131,7 +139,7 @@ const AllItems = () => {
               <Link
                 to={`/items/${item._id}`}
                 className="mt-4 inline-block w-full primaryBtn transition-colors"
-                >
+              >
                 View Details
               </Link>
             </div>

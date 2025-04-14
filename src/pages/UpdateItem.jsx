@@ -1,86 +1,74 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import useAuthHook from "../hooks/useAuthHook";
-import { useNavigate} from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Loading from "./Loading";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
-const UpdateItem = ({id, modalRef}) => {
+const UpdateItem = ({ item, modalRef, id }) => {
   const [startDate, setStartDate] = useState(new Date());
   const { user } = useAuthHook();
-  // const { id } = useParams();
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  // console.log(id)
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const axiosSecure = useAxiosSecure();
 
-  const { data: item, isLoading } = useQuery({
-    queryKey: ["allItems", id],
-    enabled: !!id,
-    queryFn: async () => {
-      return await axios
-        .get(`${import.meta.env.VITE_URL}/item/${id}`)
-        .then((res) => res.data);
-    },
-  });
-// console.log(item)
+  // console.log(item);
+
+  // console.log(item)
   const { isError, isPending, mutateAsync } = useMutation({
     mutationFn: async (data) => {
       // console.log(data)
-      return await axios.patch(`${import.meta.env.VITE_URL}/item/${id}`, data).then(res => res.data)
+      return await axiosSecure
+        .patch(`${import.meta.env.VITE_URL}/item/${id}`, data)
+        .then((res) => res.data);
     },
     onSuccess: (data) => {
       // console.log(data)
-     if(data.modifiedCount > 0) {
-      toast.success('Item Updated')
-      navigate('/myItems')
-      queryClient.invalidateQueries({queryKey: ['allItems']})
-      if(modalRef?.current) {
-        modalRef?.current.close()
+      if (data.modifiedCount > 0) {
+        toast.success("Item Updated");
+        navigate("/myItems");
+        queryClient.invalidateQueries({ queryKey: ["allItems"] });
+        if (modalRef?.current) {
+          modalRef?.current.close();
+        }
       }
-     }
     },
     onError: (err) => {
-      toast.error(err.message)
-    }
-    
-    
+      toast.error(err.message);
+    },
   });
-
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
 
-    const imageFile = formData.get('image')
-    
-    const imageFormData = new FormData()
-    imageFormData.append('image', imageFile)
-    
-    const imgbbRes = await axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`, imageFormData)
-    const imageUrl = imgbbRes.data.data.url
+    const imageFile = formData.get("image");
+
+    const imageFormData = new FormData();
+    imageFormData.append("image", imageFile);
+
+    const imgbbRes = await axios.post(
+      `https://api.imgbb.com/1/upload?key=448f6936d062b22a5664ab8c917eab57`,
+      imageFormData
+    );
+    const imageUrl = imgbbRes.data.data.url;
     // console.log(imageUrl)
-    
+
     const data = Object.fromEntries(formData.entries());
     data.date = startDate;
-    data.image = imageUrl
+    data.image = imageUrl;
 
     // console.log(data)
 
-    await mutateAsync(data)
-
-
-
+    await mutateAsync(data);
   };
-// console.log(item)
+  // console.log(item)
 
-if(isError) toast.error('Something Wrong')
-
-if(isLoading) return <Loading></Loading>
-
+  if (isError) toast.error("Something Wrong");
 
   return (
     <div className="">
@@ -184,8 +172,8 @@ if(isLoading) return <Loading></Loading>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Date Lost/Found <span className="text-red-500 font-bold">*</span>
           </label>
-          <DatePicker 
-          method="dialog"
+          <DatePicker
+            method="dialog"
             name="date"
             defaultValue={new Date(item?.date).toLocaleDateString()}
             selected={startDate}
@@ -224,12 +212,12 @@ if(isLoading) return <Loading></Loading>
 
         {/* Submit Button */}
         <button
-        // onClick={document.getElementById("my_modal_4").close()}
+          // onClick={document.getElementById("my_modal_4").close()}
           type="submit"
-            disabled={isPending}
-            className={`w-full py-2 px-4 rounded-md text-white font-medium cursor-pointer ${
-              isPending ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
-            }`}
+          disabled={isPending}
+          className={`w-full py-2 px-4 rounded-md text-white font-medium cursor-pointer ${
+            isPending ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
+          }`}
         >
           {isPending ? "Updating..." : "Update Post"}
         </button>

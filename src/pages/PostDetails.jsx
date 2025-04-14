@@ -9,26 +9,29 @@ import {
 import useAuthHook from "../hooks/useAuthHook";
 import DatePicker from "react-datepicker";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQueryClient} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../hooks/useAxiosSecure";
+import { Helmet } from "react-helmet";
 
 const PostDetails = () => {
   const { id } = useParams();
   const { user } = useAuthHook();
   const [startDate, setStartDate] = useState(new Date());
   const [item, setItem] = useState({});
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
-    axios
+    axiosSecure
       .get(`${import.meta.env.VITE_URL}/item/${id}`)
       .then((res) => {
         setItem(res.data);
       })
       .catch((err) => console.log(err.message));
-  }, [id]);
+  }, [axiosSecure, id]);
 
   const openModal = () => {
     document.body.classList.add("overflow-hidden");
@@ -43,22 +46,21 @@ const PostDetails = () => {
   const { isError, isPending, mutateAsync } = useMutation({
     mutationFn: async (data) => {
       // console.log(data)
-      return await axios.post(`${import.meta.env.VITE_URL}/recovery`, data).then(res => res.data)
+      return await axios
+        .post(`${import.meta.env.VITE_URL}/recovery`, data)
+        .then((res) => res.data);
     },
     onSuccess: (data) => {
-     if(data.insertedId) {
-      toast.success('Item Recovered Successfully')
-      navigate('/allItems')
-      queryClient.invalidateQueries({queryKey: ['recovery']})
-     }
+      if (data.insertedId) {
+        toast.success("Item Recovered Successfully");
+        navigate("/allItems");
+        queryClient.invalidateQueries({ queryKey: ["recovery"] });
+      }
     },
     onError: (err) => {
-      toast.error(err.message)
-    }
-    
-    
+      toast.error(err.message);
+    },
   });
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -78,13 +80,12 @@ const PostDetails = () => {
     };
     // console.log(recoveredInformation)
 
-    if(user?.email === item.authorEmail) {
-      return toast.error('Both are the same person')
+    if (user?.email === item.authorEmail) {
+      return toast.error("Both are the same person");
     }
 
-    await mutateAsync(recoveredInformation)
+    await mutateAsync(recoveredInformation);
   };
-
 
   if (isError) {
     return toast.error("Something wrong");
@@ -92,6 +93,10 @@ const PostDetails = () => {
 
   return (
     <div className="max-w-3xl mx-auto mt-6">
+      <Helmet>
+        <title>Item Details | Home</title>
+      </Helmet>
+
       <h1 className="mb-12 text-center">Item Details</h1>
 
       <div className="bgPrimary rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -140,19 +145,29 @@ const PostDetails = () => {
             </div>
             <div className="flex items-center">
               <FaUser className="mr-2 text-gray-400" />
-              <p>Posted by <span className="font-bold">{item.authorName}</span></p>
+              <p>
+                Posted by <span className="font-bold">{item.authorName}</span>
+              </p>
             </div>
             <div className="flex items-center">
               <FaEnvelope className="mr-2 text-gray-400" />
-              <p>Email: <span className="font-bold">{item.authorEmail}</span></p>
+              <p>
+                Email: <span className="font-bold">{item.authorEmail}</span>
+              </p>
             </div>
             <div className="flex items-center">
-              <span className="font-bold text-red-500 text-lg">{item.status}</span>
+              <span className="font-bold text-red-500 text-lg">
+                {item.status}
+              </span>
             </div>
           </div>
 
           <div className="flex justify-center">
-            <button disabled={item.status === 'Recovered' ? true : false} className="primaryBtn disabled:cursor-not-allowed" onClick={openModal}>
+            <button
+              disabled={item.status === "Recovered" ? true : false}
+              className="primaryBtn disabled:cursor-not-allowed"
+              onClick={openModal}
+            >
               {item.postType === "Lost" ? "Found This!" : "This is Mine!"}
             </button>
           </div>
@@ -216,7 +231,6 @@ const PostDetails = () => {
                     </p>
                     <p className="text-gray-600 text-sm">{user?.email}</p>
                   </div>
-                  
                 </div>
               </div>
 
@@ -234,9 +248,7 @@ const PostDetails = () => {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 >
-                  {
-                    isPending ? 'Submitting' : 'Submit Recovery'
-                  }
+                  {isPending ? "Submitting" : "Submit Recovery"}
                 </button>
               </div>
             </form>

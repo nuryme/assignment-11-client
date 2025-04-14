@@ -9,12 +9,17 @@ import { Link } from "react-router-dom";
 import UpdateItem from "./UpdateItem";
 import { useRef, useState } from "react";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../hooks/useAxiosSecure";
+import { Helmet } from "react-helmet";
 
 const MyItems = () => {
   const { user } = useAuthHook();
   const queryClient = useQueryClient();
-  const [selectedId, setSelectedId] = useState(null)
-  const modalRef = useRef()
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const modalRef = useRef();
+  const axiosSecure = useAxiosSecure();
+
   // console.log(modalRef)
 
   const {
@@ -24,7 +29,7 @@ const MyItems = () => {
   } = useQuery({
     queryKey: ["allItems"],
     queryFn: async () => {
-      return await axios
+      return await axiosSecure
         .get(`${import.meta.env.VITE_URL}/items/${user.email}`)
         .then((res) => res.data);
     },
@@ -58,7 +63,6 @@ const MyItems = () => {
   }
 
   const handleDelete = (id) => {
-
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -66,15 +70,10 @@ const MyItems = () => {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
         deleteItem(id);
-        // Swal.fire({
-        //   title: "Deleted!",
-        //   text: "Your file has been deleted.",
-        //   icon: "success"
-        // });
       }
     });
   };
@@ -82,6 +81,10 @@ const MyItems = () => {
   // console.log(items);
   return (
     <div className="max_width mt-6">
+      <Helmet>
+        <title>My Items | Home</title>
+      </Helmet>
+
       <h1 className="mb-12 text-center">My Items</h1>
       <div className="overflow-x-auto">
         {items.length > 0 ? (
@@ -105,13 +108,13 @@ const MyItems = () => {
                   <td>{item.category}</td>
                   <td>{item.status}</td>
                   <td className="flex items-center gap-4 text-xl">
-                    <button 
-                    // to={`/updateItems/${item._id}`}
-                    onClick={() => {
-                      setSelectedId(item._id)
-                      document.getElementById("my_modal_4").showModal()
-                    }}
-
+                    <button
+                      // to={`/updateItems/${item._id}`}
+                      onClick={() => {
+                        setSelectedItem(item);
+                        setSelectedId(item._id);
+                        document.getElementById("my_modal_4").showModal();
+                      }}
                     >
                       <MdOutlineSystemUpdateAlt
                         title="Update"
@@ -145,7 +148,11 @@ const MyItems = () => {
       <dialog ref={modalRef} id="my_modal_4" className="modal">
         <div className="modal-box w-11/12 max-w-2xl">
           <div className="modal-action block">
-              <UpdateItem id={selectedId} modalRef={modalRef}></UpdateItem>
+            <UpdateItem
+              id={selectedId}
+              item={selectedItem}
+              modalRef={modalRef}
+            ></UpdateItem>
           </div>
         </div>
       </dialog>

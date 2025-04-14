@@ -1,11 +1,45 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import useAuthHook from "./useAuthHook";
+import { useEffect } from "react";
 
-export const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000',
+ const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_URL,
   withCredentials: true
 })
 
-// export default function useAxiosSecure () {
 
-// }
+const useAxiosSecure = () => {
 
+  const navigate = useNavigate()
+  const {handleLogOut} = useAuthHook()
+
+
+  useEffect(() => {
+    axiosInstance.interceptors.response.use(
+      (res) => {
+        return res
+      },
+      (err) => {
+        if(err.status === 401 || err.status === 403) {
+          handleLogOut()
+          .then(() => {
+            navigate('/login')
+            // toast.error(err.message)
+          }
+          )
+          .catch(err => console.log(err))
+        }
+
+        return Promise.reject(err)
+      }
+      
+      
+    )
+  }
+  , [handleLogOut, navigate])
+
+  return axiosInstance
+};
+
+export default useAxiosSecure;

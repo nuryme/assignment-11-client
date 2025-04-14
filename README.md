@@ -1,12 +1,24 @@
-# React + Vite
+# Project Name
+- WhereIsIt
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Live Link
+- https://whereisit-where.netlify.app
 
-Currently, two official plugins are available:
+## 🔍 Purpose  
+**WhereIsIt** is a full-stack web application designed to help users report lost items, browse found items, and connect with others to recover belongings. It serves as a practical solution for misplaced items while providing developers with hands-on experience in:  
+- **User authentication** (secure sign-up/login).  
+- **File uploads** (for item images).  
+- **Database management** (CRUD operations for lost/found listings).  
+- **API integration** (e.g., location services, notifications). 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Key Features  
+- **Lost Item Reports**: Users can post details (description, location, image) of lost items.  
+- **Found Item Listings**: Browse and search items reported as found by others.  
+- **Recovered Items**: Users can see items that has been already recovered.  
+- **Secure Messaging**: Contact finders/owners privately.  
+- **Secured**: No one can access one's personal data.  
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 npm packages
+- Tan Stack
+- Axios
+- Jsonwebtoken

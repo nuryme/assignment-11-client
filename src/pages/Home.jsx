@@ -21,6 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Loading from "./Loading";
 import toast from "react-hot-toast";
+import { Helmet } from "react-helmet";
 
 const Home = () => {
   const { data, isLoading, isError } = useQuery({
@@ -43,6 +44,10 @@ const Home = () => {
   }
   return (
     <div>
+      <Helmet>
+        <title>Home</title>
+      </Helmet>
+
       <Banner></Banner>
 
       {/* cards section */}

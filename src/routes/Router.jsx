@@ -47,10 +47,6 @@ const routes = createBrowserRouter([
                 element: <PrivateRouter><MyItems></MyItems></PrivateRouter>
             },
             {
-                path: '/updateItems/:id',
-                element: <PrivateRouter><UpdateItem></UpdateItem></PrivateRouter>
-            },
-            {
                 path: '/allRecovered',
                 element: <PrivateRouter><AllRecovery></AllRecovery></PrivateRouter>
             }

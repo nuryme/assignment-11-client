@@ -6,31 +6,33 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import useAxiosSecure from "../hooks/useAxiosSecure";
+import { Helmet } from "react-helmet";
 
 const AddItem = () => {
   const { user } = useAuthHook();
   const [startDate, setStartDate] = useState(new Date());
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const axiosSecure = useAxiosSecure();
 
   const { isError, isPending, mutateAsync } = useMutation({
     mutationFn: async (data) => {
       // console.log(data)
-      const res = await axios.post(`${import.meta.env.VITE_URL}/items`, data);
-      return res.data;
+      return axiosSecure
+        .post(`${import.meta.env.VITE_URL}/items`, data)
+        .then((res) => res.data);
     },
     onSuccess: (data) => {
-     if(data.insertedId) {
-      toast.success('Item Posted')
-      navigate('/myItems')
-      queryClient.invalidateQueries({queryKey: ['allItems']})
-     }
+      if (data.insertedId) {
+        toast.success("Item Posted");
+        navigate("/myItems");
+        queryClient.invalidateQueries({ queryKey: ["allItems"] });
+      }
     },
     onError: (err) => {
-      toast.error(err.message)
-    }
-    
-    
+      toast.error(err.message);
+    },
   });
 
   const handleSubmit = async (e) => {
@@ -38,23 +40,26 @@ const AddItem = () => {
 
     const formData = new FormData(e.target);
 
-    const imageFile = formData.get('image')
-    
-    const imageFormData = new FormData()
-    imageFormData.append('image', imageFile)
-    
-    const imgbbRes = await axios.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`, imageFormData)
-    const imageUrl = imgbbRes.data.data.url
+    const imageFile = formData.get("image");
+
+    const imageFormData = new FormData();
+    imageFormData.append("image", imageFile);
+
+    const imgbbRes = await axios.post(
+      `https://api.imgbb.com/1/upload?key=448f6936d062b22a5664ab8c917eab57`,
+      imageFormData
+    );
+    const imageUrl = imgbbRes.data.data.url;
     // console.log(imageUrl)
-    
+
     const data = Object.fromEntries(formData.entries());
     data.date = startDate;
-    data.image = imageUrl
-    data.status = 'Not Recovered'
+    data.image = imageUrl;
+    data.status = "Not Recovered";
 
     // console.log(data)
 
-    await mutateAsync(data)
+    await mutateAsync(data);
   };
 
   if (isError) {
@@ -63,6 +68,10 @@ const AddItem = () => {
 
   return (
     <div className="max-w-lg mx-auto mt-6">
+      <Helmet>
+        <title>Add Item | Home</title>
+      </Helmet>
+
       <h1 className="mb-12 text-center">Report Lost/Found Item</h1>
 
       <form onSubmit={handleSubmit}>
@@ -199,10 +208,10 @@ const AddItem = () => {
         {/* Submit Button */}
         <button
           type="submit"
-            disabled={isPending}
-            className={`w-full py-2 px-4 rounded-md text-white font-medium cursor-pointer ${
-              isPending ? "bg-blue-400" : "bg-blue-500 hover:bg-blue-700"
-            }`}
+          disabled={isPending}
+          className={`w-full py-2 px-4 rounded-md text-white font-medium cursor-pointer ${
+            isPending ? "bg-blue-400" : "bg-blue-500 hover:bg-blue-700"
+          }`}
         >
           {isPending ? "Posting..." : "Add Post"}
         </button>

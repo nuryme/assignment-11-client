@@ -35,6 +35,10 @@ const Register = () => {
 
   return (
     <div className="p-6">
+      <Helmet>
+        <title>Register | Home</title>
+      </Helmet>
+
       <h1 className=" text-center primaryColor">Please Register</h1>
 
       <div className="flex flex-row-reverse lg:flex-row justify-center gap-12">
@@ -120,7 +124,8 @@ const Register = () => {
 
             {invalid && (
               <p className="text-sm text-red-500 mb-4">
-                Must have an Uppercase letter, a lowercase letter, Length must be at least 6 character
+                Must have an Uppercase letter, a lowercase letter, Length must
+                be at least 6 character
               </p>
             )}
             <p className="text-sm text-gray-500 mb-4">

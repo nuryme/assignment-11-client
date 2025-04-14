@@ -1,5 +1,5 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useState } from 'react';
+import { useQuery} from '@tanstack/react-query';
+import React from 'react';
 import toast from 'react-hot-toast';
 import Loading from './Loading';
 import useAuthHook from '../hooks/useAuthHook';
@@ -7,7 +7,6 @@ import axios from 'axios';
 
 const AllRecovery = () => {
     const { user } = useAuthHook();
-    const queryClient = useQueryClient();
   
     const {
       data: items,

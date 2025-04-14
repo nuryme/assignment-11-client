@@ -23,11 +23,7 @@ import Loading from "./Loading";
 import toast from "react-hot-toast";
 
 const Home = () => {
-  const {
-    data: items,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["allItems"],
     queryFn: async () => {
       return await axios
@@ -35,6 +31,8 @@ const Home = () => {
         .then((res) => res.data);
     },
   });
+
+  const items = data?.sort((a, b) => new Date(b.date) - new Date(a.date) || []);
 
   if (isLoading) {
     return <Loading></Loading>;
@@ -157,7 +155,6 @@ const Home = () => {
 
                 {/* Meta Information */}
                 <div className="space-y-2 text-sm text-gray-500">
-
                   <div className="flex items-center">
                     <FaCalendarAlt className="mr-2 text-gray-400" />
                     <span>
@@ -183,13 +180,19 @@ const Home = () => {
                 {/* View Button */}
                 <Link
                   to={`/items/${item._id}`}
-                  className="mt-4 inline-block w-full py-2 px-4 text-center bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+                  className="mt-4 inline-block w-full primaryBtn transition-colors"
                 >
                   View Details
                 </Link>
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="flex justify-end mt-8">
+          <Link to={"/allItems"}>
+            <button className="primaryBtn">See All</button>
+          </Link>
         </div>
       </section>
 

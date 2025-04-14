@@ -20,6 +20,7 @@
     "localforage": "^1.10.0",
     "lottie-react": "^2.4.1",
     "match-sorter": "^8.0.0",
+    "motion": "^12.6.5",
     "react": "^19.0.0",
     "react-datepicker": "^8.3.0",
     "react-dom": "^19.0.0",
@@ -29,6 +30,7 @@
     "react-slick": "^0.30.3",
     "slick-carousel": "^1.8.1",
     "sort-by": "^1.2.0",
+    "sweetalert2": "^11.17.2",
     "swiper": "^11.2.6",
     "tailwindcss": "^4.1.3"
   },

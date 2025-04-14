@@ -1,26 +1,50 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
+import {
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaSearch,
+  FaTimes,
+} from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Loading from "./Loading";
 
 const AllItems = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedTerm, setDebouncedTerm] = useState('');
   const all = true;
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTerm(searchTerm)
+    }, 500);
+
+    return () => clearTimeout(timer)
+  }
+  , [searchTerm])
 
   const {
     data: items,
     isLoading,
     isError,
+    isSuccess,
+
   } = useQuery({
-    queryKey: ["allItems"],
+    queryKey: ["search", debouncedTerm],
     queryFn: async () => {
       return await axios
-        .get(`${import.meta.env.VITE_URL}/items?all=${all}`)
+        .get(`${import.meta.env.VITE_URL}/items?all=${all}&search=${debouncedTerm}`)
         .then((res) => res.data);
     },
+    keepPreviousData: true
   });
+
+  if(isSuccess) {
+    queryClient.invalidateQueries({queryKey: ['allItems']})
+  }
 
   if (isLoading) {
     return <Loading></Loading>;
@@ -30,9 +54,29 @@ const AllItems = () => {
     return toast.error("Something wrong");
   }
 
+  const searchClear = () => {
+    setSearchTerm("");
+  };
+
   return (
     <div className="max_width mt-6">
       <h1 className="mb-12 text-center">Lost/Found Items</h1>
+
+      <div className="relative mb-8 max-w-md mx-auto">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search items by title"
+          className="w-full pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <FaSearch className="absolute left-3 top-3 text-gray-400" />
+        {
+          searchTerm && <button onClick={searchClear} className="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
+          <FaTimes />
+        </button>
+        }
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
         {items.map((item) => (
@@ -86,8 +130,8 @@ const AllItems = () => {
 
               <Link
                 to={`/items/${item._id}`}
-                className="mt-3 block w-full py-1.5 text-center text-sm bg-blue-600 hover:bg-blue-700 text-white rounded"
-              >
+                className="mt-4 inline-block w-full primaryBtn transition-colors"
+                >
                 View Details
               </Link>
             </div>
